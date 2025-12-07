@@ -170,6 +170,7 @@ APP_NAME="FiberTemplate"
 ### Middleware Configuration
 ```env
 CORS=true              # Enable CORS
+CSRF=true
 COMPRESS=true          # Enable compression
 COMPRESS_LEVEL=0       # Compression level (0=balanced, 1=fast, 2=best)
 ```
