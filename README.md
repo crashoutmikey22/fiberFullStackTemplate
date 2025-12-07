@@ -1,5 +1,6 @@
 # Fiber Full Stack Template
 
+(vibe coded -- sorry pureists)
 A production-ready Fiber web application template with environment-driven feature flags. Toggle databases, caching, authentication, mail services, AWS integrations, and realtime features directly through environment variables—no code changes required.
 
 ## 🚀 Features
