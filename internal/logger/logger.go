@@ -108,7 +108,7 @@ func NewWithFile(environment, logDir string) (*Logger, error) {
 
 // WithFields returns a logger with additional fields
 func (l *Logger) WithFields(fields ...zap.Field) *Logger {
-	return &Logger{l.Logger.With(fields...)}
+	return &Logger{l.With(fields...)}
 }
 
 // Info logs an info message
