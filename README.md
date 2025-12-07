@@ -76,14 +76,14 @@ Toggle optional subsystems without code modifications:
 ### 1. Environment Setup
 ```bash
 # Clone and setup
-git clone <your-repo-url>
+git clone https://github.com/crashoutmikey22/fiberFullStackTemplate.git
 cd fiberFullStackTemplate
 
 # Copy environment configuration
 cp .env.example .env
 
 # Edit configuration as needed
-nano .env
+vim .env
 ```
 
 ### 2. Local Development
@@ -94,7 +94,7 @@ go mod tidy
 # Run development server
 go run main.go
 
-# Or use the build script
+# Or use the build or run script
 ./cmds/build.sh
 ./cmds/run.sh
 ```
