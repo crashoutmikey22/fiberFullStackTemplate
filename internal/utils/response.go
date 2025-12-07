@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/utils"
 )
 
 // Response represents a standard API response
@@ -73,4 +74,9 @@ func ValidationError(c *fiber.Ctx, errors map[string]string) error {
 		"timestamp":  time.Now(),
 		"request_id": c.Get("X-Request-ID"),
 	})
+}
+
+// GenerateRandomString generates a random string of the specified length
+func GenerateRandomString() string {
+	return utils.UUIDv4()
 }

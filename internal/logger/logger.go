@@ -60,7 +60,7 @@ func New(environment string) (*Logger, error) {
 // NewWithFile creates a new logger that also writes to a file
 func NewWithFile(environment, logDir string) (*Logger, error) {
 	// Ensure log directory exists
-	if err := os.MkdirAll(logDir, 0755); err != nil {
+	if err := os.MkdirAll(logDir, 0750); err != nil {
 		return nil, err
 	}
 

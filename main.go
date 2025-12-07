@@ -104,6 +104,10 @@ func main() {
 		app.Use(middleware.Compression(true, cfg.CompressLevel))
 	}
 
+	if cfg.CSRF {
+		app.Use(middleware.CSRF(true))
+	}
+
 	// Initialize handlers with configuration-aware dependencies
 	healthHandler := handlers.NewHealthHandler(cfg, services.DB)
 	apiHandler := handlers.NewAPIHandler(cfg)

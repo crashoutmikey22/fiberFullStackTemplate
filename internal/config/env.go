@@ -20,6 +20,7 @@ type Config struct {
 
 	// Middleware
 	CORS          bool
+	CSRF          bool
 	Compress      bool
 	CompressLevel int
 
@@ -122,6 +123,7 @@ func LoadConfig() (*Config, error) {
 
 		// Middleware
 		CORS:          getEnvAsBool("CORS", true),
+		CSRF:          getEnvAsBool("CSRF", true),
 		Compress:      getEnvAsBool("COMPRESS", true),
 		CompressLevel: getEnvAsInt("COMPRESS_LEVEL", 0),
 

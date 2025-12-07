@@ -114,7 +114,7 @@ if command_exists "gosec"; then
         run_security_check "gosec" "gosec ./..." "GoSec security scan"
     fi
 else
-    print_status "WARN" "GoSec not found. Install with: go install github.com/securecodewarrior/gosec/v2/cmd/gosec@latest"
+    print_status "WARN" "GoSec not found. Install with: go install go install github.com/securego/gosec/v2/cmd/gosec@latest"
 fi
 
 # 2. Dependency Vulnerability Scanning
@@ -128,7 +128,7 @@ run_security_check "go" "go mod verify" "Go modules verification"
 if command_exists "nancy"; then
     run_security_check "nancy" "go list -json -deps ./... | nancy sleuth" "Nancy vulnerability scan"
 else
-    print_status "WARN" "Nancy not found. Install with: go install github.com/sonatypecommunity/nancy@latest"
+    print_status "WARN" "Nancy not found. Install from: https://github.com/sonatype-nexus-community/nancy"
 fi
 
 # 3. Secret Detection
