@@ -1,0 +1,86 @@
+// package models
+
+// import (
+// 	"time"
+
+// 	"github.com/google/uuid"
+// )
+
+// // User represents a user in the system
+// type User struct {
+// 	ID        uuid.UUID `json:"id" db:"id"`
+// 	Email     string    `json:"email" db:"email"`
+// 	Username  string    `json:"username" db:"username"`
+// 	FirstName string    `json:"first_name" db:"first_name"`
+// 	LastName  string    `json:"last_name" db:"last_name"`
+// 	Password  string    `json:"-" db:"password"` // Never return password in JSON
+// 	IsActive  bool      `json:"is_active" db:"is_active"`
+// 	Role      string    `json:"role" db:"role"`
+// 	CreatedAt time.Time `json:"created_at" db:"created_at"`
+// 	UpdatedAt time.Time `json:"updated_at" db:"updated_at"`
+// }
+
+// // CreateUserRequest represents the request to create a new user
+// type CreateUserRequest struct {
+// 	Email     string `json:"email" validate:"required,email"`
+// 	Username  string `json:"username" validate:"required,min=3,max=50"`
+// 	FirstName string `json:"first_name" validate:"required,min=1,max=100"`
+// 	LastName  string `json:"last_name" validate:"required,min=1,max=100"`
+// 	Password  string `json:"password" validate:"required,min=8"`
+// 	Role      string `json:"role" validate:"required,oneof=admin user moderator"`
+// }
+
+// // UpdateUserRequest represents the request to update a user
+// type UpdateUserRequest struct {
+// 	Email     *string `json:"email" validate:"omitempty,email"`
+// 	Username  *string `json:"username" validate:"omitempty,min=3,max=50"`
+// 	FirstName *string `json:"first_name" validate:"omitempty,min=1,max=100"`
+// 	LastName  *string `json:"last_name" validate:"omitempty,min=1,max=100"`
+// 	Role      *string `json:"role" validate:"omitempty,oneof=admin user moderator"`
+// 	IsActive  *bool   `json:"is_active"`
+// }
+
+// // UserResponse represents the user response (without sensitive data)
+// type UserResponse struct {
+// 	ID        uuid.UUID `json:"id"`
+// 	Email     string    `json:"email"`
+// 	Username  string    `json:"username"`
+// 	FirstName string    `json:"first_name"`
+// 	LastName  string    `json:"last_name"`
+// 	IsActive  bool      `json:"is_active"`
+// 	Role      string    `json:"role"`
+// 	CreatedAt time.Time `json:"created_at"`
+// 	UpdatedAt time.Time `json:"updated_at"`
+// }
+
+// // ToResponse converts a User to UserResponse
+// func (u *User) ToResponse() *UserResponse {
+// 	return &UserResponse{
+// 		ID:        u.ID,
+// 		Email:     u.Email,
+// 		Username:  u.Username,
+// 		FirstName: u.FirstName,
+// 		LastName:  u.LastName,
+// 		IsActive:  u.IsActive,
+// 		Role:      u.Role,
+// 		CreatedAt: u.CreatedAt,
+// 		UpdatedAt: u.UpdatedAt,
+// 	}
+// }
+
+// // NewUser creates a new User from CreateUserRequest
+// func NewUser(req *CreateUserRequest) *User {
+// 	now := time.Now()
+// 	return &User{
+// 		ID:        uuid.New(),
+// 		Email:     req.Email,
+// 		Username:  req.Username,
+// 		FirstName: req.FirstName,
+// 		LastName:  req.LastName,
+// 		Password:  req.Password, // In real app, this should be hashed
+// 		IsActive:  true,
+// 		Role:      req.Role,
+// 		CreatedAt: now,
+// 		UpdatedAt: now,
+// 	}
+// }
