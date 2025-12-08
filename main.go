@@ -120,6 +120,10 @@ func main() {
 	// Initialize handlers with configuration-aware dependencies
 	healthHandler := handlers.NewHealthHandler(cfg, services.DB)
 	apiHandler := handlers.NewAPIHandler(cfg)
+	// validationExamples := handlers.NewValidationExamples()
+
+	// Register validation example routes
+	// validationExamples.RegisterRoutes(app)
 
 	// Routes
 	app.Get("/", apiHandler.Homepage)

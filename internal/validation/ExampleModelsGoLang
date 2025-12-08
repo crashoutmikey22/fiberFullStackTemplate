@@ -1,0 +1,184 @@
+package validation
+
+import (
+	"time"
+)
+
+// UserRegistration represents user registration request validation
+type UserRegistration struct {
+	Email           string `json:"email" validate:"required,email,max=255"`
+	Username        string `json:"username" validate:"required,username,min=3,max=30"`
+	FirstName       string `json:"first_name" validate:"required,alpha,min=2,max=50"`
+	LastName        string `json:"last_name" validate:"required,alpha,min=2,max=50"`
+	Password        string `json:"password" validate:"required,password,min=8,max=128"`
+	ConfirmPassword string `json:"confirm_password" validate:"required,eqfield=Password"`
+}
+
+// UserLogin represents user login request validation
+type UserLogin struct {
+	Email    string `json:"email" validate:"required,email,max=255"`
+	Password string `json:"password" validate:"required,min=1,max=128"`
+}
+
+// UserUpdate represents user profile update validation
+type UserUpdate struct {
+	FirstName string `json:"first_name,omitempty" validate:"omitempty,alpha,min=2,max=50"`
+	LastName  string `json:"last_name,omitempty" validate:"omitempty,alpha,min=2,max=50"`
+	Username  string `json:"username,omitempty" validate:"omitempty,username,min=3,max=30"`
+}
+
+// PasswordChange represents password change request validation
+type PasswordChange struct {
+	CurrentPassword string `json:"current_password" validate:"required,min=1,max=128"`
+	NewPassword     string `json:"new_password" validate:"required,password,min=8,max=128"`
+	ConfirmPassword string `json:"confirm_password" validate:"required,eqfield=NewPassword"`
+}
+
+// PostCreate represents blog post creation validation
+type PostCreate struct {
+	Title       string     `json:"title" validate:"required,min=3,max=200"`
+	Slug        string     `json:"slug" validate:"required,slug,min=3,max=100"`
+	Content     string     `json:"content" validate:"required,min=10,max=50000"`
+	Excerpt     string     `json:"excerpt,omitempty" validate:"omitempty,max=500"`
+	Status      string     `json:"status" validate:"required,oneof=draft published archived"`
+	PublishedAt *time.Time `json:"published_at,omitempty"`
+	Tags        []string   `json:"tags,omitempty" validate:"omitempty,dive,alpha,min=2,max=30"`
+	CategoryID  string     `json:"category_id" validate:"required,uuid"`
+}
+
+// PostUpdate represents blog post update validation
+type PostUpdate struct {
+	Title       string     `json:"title,omitempty" validate:"omitempty,min=3,max=200"`
+	Slug        string     `json:"slug,omitempty" validate:"omitempty,slug,min=3,max=100"`
+	Content     string     `json:"content,omitempty" validate:"omitempty,min=10,max=50000"`
+	Excerpt     string     `json:"excerpt,omitempty" validate:"omitempty,max=500"`
+	Status      string     `json:"status,omitempty" validate:"omitempty,oneof=draft published archived"`
+	PublishedAt *time.Time `json:"published_at,omitempty"`
+	Tags        []string   `json:"tags,omitempty" validate:"omitempty,dive,alpha,min=2,max=30"`
+	CategoryID  string     `json:"category_id,omitempty" validate:"omitempty,uuid"`
+}
+
+// CommentCreate represents comment creation validation
+type CommentCreate struct {
+	PostID   string  `json:"post_id" validate:"required,uuid"`
+	Content  string  `json:"content" validate:"required,min=3,max=2000"`
+	ParentID *string `json:"parent_id,omitempty" validate:"omitempty,uuid"`
+}
+
+// ContactForm represents contact form submission validation
+type ContactForm struct {
+	Name    string `json:"name" validate:"required,min=2,max=100"`
+	Email   string `json:"email" validate:"required,email,max=255"`
+	Subject string `json:"subject" validate:"required,min=3,max=200"`
+	Message string `json:"message" validate:"required,min=10,max=5000"`
+	Phone   string `json:"phone,omitempty" validate:"omitempty,alphanum,min=10,max=20"`
+}
+
+// SearchQuery represents search parameters validation
+type SearchQuery struct {
+	Query    string `json:"query" validate:"required,min=2,max=100"`
+	Type     string `json:"type,omitempty" validate:"omitempty,oneof=posts users tags"`
+	Page     int    `json:"page,omitempty" validate:"omitempty,min=1,max=1000"`
+	Limit    int    `json:"limit,omitempty" validate:"omitempty,min=1,max=100"`
+	SortBy   string `json:"sort_by,omitempty" validate:"omitempty,oneof=relevance date title"`
+	SortDesc bool   `json:"sort_desc,omitempty"`
+}
+
+// PaginationQuery represents pagination parameters validation
+type PaginationQuery struct {
+	Page  int `json:"page,omitempty" validate:"omitempty,min=1,max=1000"`
+	Limit int `json:"limit,omitempty" validate:"omitempty,min=1,max=100"`
+}
+
+// DateRangeQuery represents date range filter validation
+type DateRangeQuery struct {
+	StartDate *time.Time `json:"start_date,omitempty" validate:"omitempty"`
+	EndDate   *time.Time `json:"end_date,omitempty" validate:"omitempty,gtfield=StartDate"`
+}
+
+// FileUpload represents file upload validation
+type FileUpload struct {
+	Filename string `json:"filename" validate:"required,min=1,max=255"`
+	Size     int64  `json:"size" validate:"required,min=1,max=10485760"` // 10MB max
+	MimeType string `json:"mime_type" validate:"required,oneof=image/jpeg image/png image/gif image/webp application/pdf text/plain"`
+}
+
+// APIKeyRequest represents API key generation request validation
+type APIKeyRequest struct {
+	Name        string     `json:"name" validate:"required,min=3,max=100"`
+	Description string     `json:"description,omitempty" validate:"omitempty,max=500"`
+	ExpiresAt   *time.Time `json:"expires_at,omitempty" validate:"omitempty"`
+	Permissions []string   `json:"permissions" validate:"required,dive,oneof=read write delete admin"`
+}
+
+// NewsletterSubscription represents newsletter subscription validation
+type NewsletterSubscription struct {
+	Email string `json:"email" validate:"required,email,max=255"`
+	Name  string `json:"name,omitempty" validate:"omitempty,min=2,max=100"`
+}
+
+// ProductCreate represents product creation validation
+type ProductCreate struct {
+	Name        string   `json:"name" validate:"required,min=3,max=200"`
+	Description string   `json:"description" validate:"required,min=10,max=2000"`
+	Price       float64  `json:"price" validate:"required,gt=0,lte=99999.99"`
+	Stock       int      `json:"stock" validate:"required,min=0,max=100000"`
+	CategoryID  string   `json:"category_id" validate:"required,uuid"`
+	Tags        []string `json:"tags,omitempty" validate:"omitempty,dive,alpha,min=2,max=30"`
+	IsActive    bool     `json:"is_active,omitempty"`
+}
+
+// OrderCreate represents order creation validation
+type OrderCreate struct {
+	CustomerID string           `json:"customer_id" validate:"required,uuid"`
+	Items      []OrderItem      `json:"items" validate:"required,min=1,dive"`
+	Shipping   ShippingAddress  `json:"shipping" validate:"required"`
+	Billing    *ShippingAddress `json:"billing,omitempty"`
+	Notes      string           `json:"notes,omitempty" validate:"omitempty,max=1000"`
+}
+
+// OrderItem represents order item validation
+type OrderItem struct {
+	ProductID string  `json:"product_id" validate:"required,uuid"`
+	Quantity  int     `json:"quantity" validate:"required,min=1,max=100"`
+	Price     float64 `json:"price" validate:"required,gt=0"`
+}
+
+// ShippingAddress represents shipping address validation
+type ShippingAddress struct {
+	Street  string `json:"street" validate:"required,min=5,max=200"`
+	City    string `json:"city" validate:"required,min=2,max=100"`
+	State   string `json:"state" validate:"required,min=2,max=50"`
+	ZipCode string `json:"zip_code" validate:"required,min=5,max=20"`
+	Country string `json:"country" validate:"required,min=2,max=100"`
+}
+
+// EventCreate represents event creation validation
+type EventCreate struct {
+	Title        string    `json:"title" validate:"required,min=3,max=200"`
+	Description  string    `json:"description" validate:"required,min=10,max=5000"`
+	StartDate    time.Time `json:"start_date" validate:"required"`
+	EndDate      time.Time `json:"end_date" validate:"required,gtfield=StartDate"`
+	Location     string    `json:"location" validate:"required,min=3,max=200"`
+	MaxAttendees int       `json:"max_attendees,omitempty" validate:"omitempty,min=1,max=10000"`
+	IsPublic     bool      `json:"is_public,omitempty"`
+}
+
+// ReportRequest represents report generation request validation
+type ReportRequest struct {
+	Type      string    `json:"type" validate:"required,oneof=sales users traffic inventory"`
+	StartDate time.Time `json:"start_date" validate:"required"`
+	EndDate   time.Time `json:"end_date" validate:"required,gtfield=StartDate"`
+	Format    string    `json:"format" validate:"required,oneof=pdf csv xlsx json"`
+	Email     string    `json:"email,omitempty" validate:"omitempty,email,max=255"`
+}
+
+// SettingsUpdate represents application settings update validation
+type SettingsUpdate struct {
+	SiteName        string `json:"site_name,omitempty" validate:"omitempty,min=3,max=100"`
+	SiteDescription string `json:"site_description,omitempty" validate:"omitempty,max=500"`
+	ContactEmail    string `json:"contact_email,omitempty" validate:"omitempty,email,max=255"`
+	MaxUploadSize   int    `json:"max_upload_size,omitempty" validate:"omitempty,min=1,max=104857600"` // 100MB max
+	EnableComments  bool   `json:"enable_comments,omitempty"`
+	EnableRSS       bool   `json:"enable_rss,omitempty"`
+}

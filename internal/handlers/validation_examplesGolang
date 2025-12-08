@@ -1,0 +1,442 @@
+package handlers
+
+import (
+	"fmt"
+	"strings"
+
+	"github.com/gofiber/fiber/v2"
+
+	"main.go/internal/middleware"
+	"main.go/internal/validation"
+)
+
+// ValidationExamples demonstrates various validation patterns
+type ValidationExamples struct {
+	validationMiddleware *middleware.ValidationMiddleware
+}
+
+// NewValidationExamples creates a new validation examples handler
+func NewValidationExamples() *ValidationExamples {
+	return &ValidationExamples{
+		validationMiddleware: middleware.NewValidationMiddleware(),
+	}
+}
+
+// RegisterRoutes registers validation example routes
+func (h *ValidationExamples) RegisterRoutes(app *fiber.App) {
+	v1 := app.Group("/api/v1/examples")
+
+	// User validation examples
+	v1.Post("/users/register", h.validationMiddleware.ValidateBody(&validation.UserRegistration{}), h.RegisterUser)
+	v1.Post("/users/login", h.validationMiddleware.ValidateBody(&validation.UserLogin{}), h.LoginUser)
+	v1.Put("/users/:id", h.validationMiddleware.ValidateParams(&struct {
+		ID string `json:"id" validate:"required,uuid"`
+	}{}), h.validationMiddleware.ValidateBody(&validation.UserUpdate{}), h.UpdateUser)
+	v1.Post("/users/change-password", h.validationMiddleware.ValidateBody(&validation.PasswordChange{}), h.ChangePassword)
+
+	// Post validation examples
+	v1.Post("/posts", h.validationMiddleware.ValidateBody(&validation.PostCreate{}), h.CreatePost)
+	v1.Put("/posts/:id", h.validationMiddleware.ValidateParams(&struct {
+		ID string `json:"id" validate:"required,uuid"`
+	}{}), h.validationMiddleware.ValidateBody(&validation.PostUpdate{}), h.UpdatePost)
+	v1.Post("/posts/:id/comments", h.validationMiddleware.ValidateParams(&struct {
+		ID string `json:"id" validate:"required,uuid"`
+	}{}), h.validationMiddleware.ValidateBody(&validation.CommentCreate{}), h.CreateComment)
+
+	// Query validation examples
+	v1.Get("/search", h.validationMiddleware.ValidateQuery(&validation.SearchQuery{}), h.Search)
+	v1.Get("/posts", h.validationMiddleware.ValidateQuery(&validation.PaginationQuery{}), h.ListPosts)
+	v1.Get("/reports", h.validationMiddleware.ValidateQuery(&validation.DateRangeQuery{}), h.GenerateReport)
+
+	// Form validation examples
+	v1.Post("/contact", h.validationMiddleware.ValidateBody(&validation.ContactForm{}), h.SubmitContactForm)
+	v1.Post("/newsletter", h.validationMiddleware.ValidateBody(&validation.NewsletterSubscription{}), h.SubscribeNewsletter)
+
+	// File upload validation
+	v1.Post("/upload", h.validationMiddleware.ValidateBody(&validation.FileUpload{}), h.UploadFile)
+
+	// Custom validation examples
+	v1.Post("/custom", h.validationMiddleware.ValidateCustom(h.customValidation), h.CustomValidation)
+
+	// Partial validation examples
+	v1.Patch("/users/:id/partial", h.validationMiddleware.ValidateParams(&struct {
+		ID string `json:"id" validate:"required,uuid"`
+	}{}), h.PartialUpdateUser)
+}
+
+// RegisterUser demonstrates user registration validation
+func (h *ValidationExamples) RegisterUser(c *fiber.Ctx) error {
+	// Get validated body
+	user, ok := middleware.GetValidatedBody[validation.UserRegistration](c)
+	if !ok {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Failed to get validated body",
+		})
+	}
+
+	// Process registration (mock implementation)
+	return c.Status(fiber.StatusCreated).JSON(fiber.Map{
+		"message": "User registered successfully",
+		"user": fiber.Map{
+			"email":    user.Email,
+			"username": user.Username,
+			"name":     fmt.Sprintf("%s %s", user.FirstName, user.LastName),
+		},
+	})
+}
+
+// LoginUser demonstrates user login validation
+func (h *ValidationExamples) LoginUser(c *fiber.Ctx) error {
+	login, ok := middleware.GetValidatedBody[validation.UserLogin](c)
+	if !ok {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Failed to get validated body",
+		})
+	}
+
+	// Process login (mock implementation)
+	return c.JSON(fiber.Map{
+		"message": "Login successful",
+		"token":   "mock-jwt-token",
+		"user": fiber.Map{
+			"email": login.Email,
+		},
+	})
+}
+
+// UpdateUser demonstrates user update validation
+func (h *ValidationExamples) UpdateUser(c *fiber.Ctx) error {
+	// Get validated params
+	params, ok := middleware.GetValidatedParams[struct {
+		ID string `json:"id" validate:"required,uuid"`
+	}](c)
+	if !ok {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Failed to get validated params",
+		})
+	}
+
+	// Get validated body
+	user, ok := middleware.GetValidatedBody[validation.UserUpdate](c)
+	if !ok {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Failed to get validated body",
+		})
+	}
+
+	return c.JSON(fiber.Map{
+		"message": "User updated successfully",
+		"user_id": params.ID,
+		"updates": user,
+	})
+}
+
+// ChangePassword demonstrates password change validation
+func (h *ValidationExamples) ChangePassword(c *fiber.Ctx) error {
+	passwordChange, ok := middleware.GetValidatedBody[validation.PasswordChange](c)
+	if !ok {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Failed to get validated body",
+		})
+	}
+
+	return c.JSON(fiber.Map{
+		"message": "Password changed successfully",
+		"email":   passwordChange.CurrentPassword, // Mock: just showing it was validated
+	})
+}
+
+// CreatePost demonstrates post creation validation
+func (h *ValidationExamples) CreatePost(c *fiber.Ctx) error {
+	post, ok := middleware.GetValidatedBody[validation.PostCreate](c)
+	if !ok {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Failed to get validated body",
+		})
+	}
+
+	return c.Status(fiber.StatusCreated).JSON(fiber.Map{
+		"message": "Post created successfully",
+		"post": fiber.Map{
+			"title":       post.Title,
+			"slug":        post.Slug,
+			"status":      post.Status,
+			"category_id": post.CategoryID,
+			"tags":        post.Tags,
+		},
+	})
+}
+
+// UpdatePost demonstrates post update validation
+func (h *ValidationExamples) UpdatePost(c *fiber.Ctx) error {
+	params, ok := middleware.GetValidatedParams[struct {
+		ID string `json:"id" validate:"required,uuid"`
+	}](c)
+	if !ok {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Failed to get validated params",
+		})
+	}
+
+	post, ok := middleware.GetValidatedBody[validation.PostUpdate](c)
+	if !ok {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Failed to get validated body",
+		})
+	}
+
+	return c.JSON(fiber.Map{
+		"message": "Post updated successfully",
+		"post_id": params.ID,
+		"updates": post,
+	})
+}
+
+// CreateComment demonstrates comment creation validation
+func (h *ValidationExamples) CreateComment(c *fiber.Ctx) error {
+	params, ok := middleware.GetValidatedParams[struct {
+		ID string `json:"id" validate:"required,uuid"`
+	}](c)
+	if !ok {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Failed to get validated params",
+		})
+	}
+
+	comment, ok := middleware.GetValidatedBody[validation.CommentCreate](c)
+	if !ok {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Failed to get validated body",
+		})
+	}
+
+	return c.Status(fiber.StatusCreated).JSON(fiber.Map{
+		"message": "Comment created successfully",
+		"post_id": params.ID,
+		"comment": fiber.Map{
+			"content":   comment.Content,
+			"parent_id": comment.ParentID,
+		},
+	})
+}
+
+// Search demonstrates query parameter validation
+func (h *ValidationExamples) Search(c *fiber.Ctx) error {
+	query, ok := middleware.GetValidatedQuery[validation.SearchQuery](c)
+	if !ok {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Failed to get validated query",
+		})
+	}
+
+	return c.JSON(fiber.Map{
+		"message": "Search results",
+		"query": fiber.Map{
+			"query":     query.Query,
+			"type":      query.Type,
+			"page":      query.Page,
+			"limit":     query.Limit,
+			"sort_by":   query.SortBy,
+			"sort_desc": query.SortDesc,
+		},
+		"results": []string{"result1", "result2", "result3"}, // Mock results
+	})
+}
+
+// ListPosts demonstrates pagination validation
+func (h *ValidationExamples) ListPosts(c *fiber.Ctx) error {
+	pagination, ok := middleware.GetValidatedQuery[validation.PaginationQuery](c)
+	if !ok {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Failed to get validated query",
+		})
+	}
+
+	return c.JSON(fiber.Map{
+		"message": "Posts list",
+		"pagination": fiber.Map{
+			"page":  pagination.Page,
+			"limit": pagination.Limit,
+		},
+		"posts": []string{"post1", "post2", "post3"}, // Mock posts
+	})
+}
+
+// GenerateReport demonstrates date range validation
+func (h *ValidationExamples) GenerateReport(c *fiber.Ctx) error {
+	dateRange, ok := middleware.GetValidatedQuery[validation.DateRangeQuery](c)
+	if !ok {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Failed to get validated query",
+		})
+	}
+
+	return c.JSON(fiber.Map{
+		"message": "Report generated",
+		"date_range": fiber.Map{
+			"start_date": dateRange.StartDate,
+			"end_date":   dateRange.EndDate,
+		},
+		"report_url": "/reports/download/mock-report.pdf",
+	})
+}
+
+// SubmitContactForm demonstrates form validation
+func (h *ValidationExamples) SubmitContactForm(c *fiber.Ctx) error {
+	form, ok := middleware.GetValidatedBody[validation.ContactForm](c)
+	if !ok {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Failed to get validated body",
+		})
+	}
+
+	return c.JSON(fiber.Map{
+		"message": "Contact form submitted successfully",
+		"contact": fiber.Map{
+			"name":    form.Name,
+			"email":   form.Email,
+			"subject": form.Subject,
+		},
+	})
+}
+
+// SubscribeNewsletter demonstrates newsletter validation
+func (h *ValidationExamples) SubscribeNewsletter(c *fiber.Ctx) error {
+	subscription, ok := middleware.GetValidatedBody[validation.NewsletterSubscription](c)
+	if !ok {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Failed to get validated body",
+		})
+	}
+
+	return c.JSON(fiber.Map{
+		"message": "Successfully subscribed to newsletter",
+		"email":   subscription.Email,
+		"name":    subscription.Name,
+	})
+}
+
+// UploadFile demonstrates file upload validation
+func (h *ValidationExamples) UploadFile(c *fiber.Ctx) error {
+	file, ok := middleware.GetValidatedBody[validation.FileUpload](c)
+	if !ok {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Failed to get validated body",
+		})
+	}
+
+	return c.JSON(fiber.Map{
+		"message": "File uploaded successfully",
+		"file": fiber.Map{
+			"filename":  file.Filename,
+			"size":      file.Size,
+			"mime_type": file.MimeType,
+		},
+	})
+}
+
+// CustomValidation demonstrates custom validation logic
+func (h *ValidationExamples) customValidation(c *fiber.Ctx) error {
+	// Custom validation logic
+	body := struct {
+		CustomField string `json:"custom_field"`
+	}{}
+
+	if err := c.BodyParser(&body); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "Invalid request body",
+		})
+	}
+
+	// Custom validation: custom_field must contain "valid"
+	if body.CustomField == "" {
+		return fiber.NewError(fiber.StatusUnprocessableEntity, "custom_field is required")
+	}
+
+	if !contains(body.CustomField, "valid") {
+		return fiber.NewError(fiber.StatusUnprocessableEntity, "custom_field must contain 'valid'")
+	}
+
+	return c.Next()
+}
+
+// CustomValidation handler
+func (h *ValidationExamples) CustomValidation(c *fiber.Ctx) error {
+	return c.JSON(fiber.Map{
+		"message": "Custom validation passed",
+	})
+}
+
+// PartialUpdateUser demonstrates partial validation
+func (h *ValidationExamples) PartialUpdateUser(c *fiber.Ctx) error {
+	params, ok := middleware.GetValidatedParams[struct {
+		ID string `json:"id" validate:"required,uuid"`
+	}](c)
+	if !ok {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Failed to get validated params",
+		})
+	}
+
+	// Get the fields to update from query parameter
+	fieldsParam := c.Query("fields", "")
+	if fieldsParam == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "fields query parameter is required for partial updates",
+		})
+	}
+
+	// Parse body
+	var updates map[string]interface{}
+	if err := c.BodyParser(&updates); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "Invalid request body",
+		})
+	}
+
+	// Validate only specified fields
+	fields := splitFields(fieldsParam)
+	if err := h.validationMiddleware.ValidatePartial(&validation.UserUpdate{}, fields...); err != nil {
+		return c.Status(fiber.StatusUnprocessableEntity).JSON(fiber.Map{
+			"error":   "Validation failed",
+			"message": "Partial validation failed",
+			"details": err.Error(),
+		})
+	}
+
+	return c.JSON(fiber.Map{
+		"message": "User partially updated",
+		"user_id": params.ID,
+		"fields":  fields,
+		"updates": updates,
+	})
+}
+
+// Helper functions
+
+func contains(s, substr string) bool {
+	return len(s) >= len(substr) && (s == substr || len(s) > len(substr) &&
+		(s[:len(substr)] == substr || s[len(s)-len(substr):] == substr ||
+			indexOf(s, substr) >= 0))
+}
+
+func indexOf(s, substr string) int {
+	for i := 0; i <= len(s)-len(substr); i++ {
+		if s[i:i+len(substr)] == substr {
+			return i
+		}
+	}
+	return -1
+}
+
+func splitFields(fieldsParam string) []string {
+	// Simple split by comma, trim spaces
+	fields := make([]string, 0)
+	for _, field := range strings.Split(fieldsParam, ",") {
+		field = strings.TrimSpace(field)
+		if field != "" {
+			fields = append(fields, field)
+		}
+	}
+	return fields
+}
