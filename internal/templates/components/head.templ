@@ -46,6 +46,7 @@ body { font-family: 'Inter', sans-serif; }
 
 		<!-- Optional Alpine + HTMX -->
 		if jsLevel == "alpine" || jsLevel == "full" {
+			<script defer src="https://cdn.jsdelivr.net/npm/@imacrayon/alpine-ajax@0.12.6/dist/cdn.min.js"></script>
 			<script defer src="https://unpkg.com/alpinejs@3.13.5/dist/cdn.min.js"></script>
 		}
 		if jsLevel == "full" {
@@ -119,6 +120,26 @@ templ HeadPlugins(enabledPlugins []string) {
 				}
 			});
 		</script>
+	}
+
+	if containsPlugin(enabledPlugins, "htmx-ws") {
+		<script src="https://cdn.jsdelivr.net/npm/htmx-ext-ws@2.0.4"></script>
+	}
+
+	if containsPlugin(enabledPlugins, "htmx-ws-json") {
+		<script src="https://cdn.jsdelivr.net/npm/htmx-json@1/dist/htmx-json.min.js"></script>
+	}
+
+	if containsPlugin(enabledPlugins, "htmx-sse") {
+		<script src="https://cdn.jsdelivr.net/npm/htmx-ext-sse@2.2.4"></script>
+	}
+
+	if containsPlugin(enabledPlugins, "loading-states") {
+		<script src="https://unpkg.com/htmx-ext-loading-states@2.0.0/loading-states.js"></script>
+	}
+
+	if containsPlugin(enabledPlugins, "alpine-typewriter") {
+		<script defer src="https://cdn.jsdelivr.net/npm/@marcreichel/alpine-typewriter/dist/alpine-typewriter.min.js"></script>
 	}
 }
 

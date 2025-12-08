@@ -309,11 +309,16 @@ The application includes a flexible plugin system for adding optional frontend f
 - **qrcode** - QR code generation
 - **prosemirror** - Rich text editor
 - **lucide** - Icon library
+- **htmx-ws** - HTMX WebSocket extension
+- **htmx-ws-json** - HTMX WebSocket JSON support
+- **htmx-sse** - HTMX Server-Sent Events extension
+- **loading-states** - HTMX loading states extension
+- **alpine-typewriter** - Alpine.js typewriter effect
 
 #### Using Plugins
 ```go
 // In your templ templates
-@components.HeadPlugins([]string{"datepicker", "sonner", "clipboard"})
+@components.HeadPlugins([]string{"datepicker", "sonner", "clipboard", "htmx-ws", "alpine-typewriter"})
 
 // Available plugins:
 // - datepicker: Date selection widget
@@ -327,6 +332,13 @@ The application includes a flexible plugin system for adding optional frontend f
 // - qrcode: QR code generation
 // - prosemirror: Rich text editing
 // - lucide: Icon components
+// - htmx-ws: WebSocket support for HTMX
+// - htmx-ws-json: JSON handling for HTMX WebSockets
+// - htmx-sse: Server-Sent Events for HTMX
+// - loading-states: Loading state management for HTMX
+// - alpine-typewriter: Typewriter effects for Alpine.js
+
+// Note: alpine-ajax is automatically included when using jsLevel "alpine" or "full"
 ```
 
 ### Middleware Development
