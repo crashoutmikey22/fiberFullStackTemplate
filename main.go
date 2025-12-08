@@ -68,7 +68,7 @@ func main() {
 
 	// Create Fiber app
 	app := fiber.New(fiber.Config{
-		Prefork:       false,
+		Prefork:       false, // multi-process(uses mutiple cores/vcpus)=faster; only use if cpu demanding like dealing with image processing, harsh hashing, etc
 		CaseSensitive: true,
 		StrictRouting: false,
 		ServerHeader:  "Fiber Server",
