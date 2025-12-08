@@ -73,7 +73,7 @@ func HeadMain(jsLevel string, title string) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		if jsLevel == "alpine" || jsLevel == "full" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<script defer src=\"https://unpkg.com/alpinejs@3.13.5/dist/cdn.min.js\"></script>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<script defer src=\"https://cdn.jsdelivr.net/npm/@imacrayon/alpine-ajax@0.12.6/dist/cdn.min.js\"></script> <script defer src=\"https://unpkg.com/alpinejs@3.13.5/dist/cdn.min.js\"></script>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -180,6 +180,36 @@ func HeadPlugins(enabledPlugins []string) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		}
+		if containsPlugin(enabledPlugins, "htmx-ws") {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "<script src=\"https://cdn.jsdelivr.net/npm/htmx-ext-ws@2.0.4\"></script>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		if containsPlugin(enabledPlugins, "htmx-ws-json") {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "<script src=\"https://cdn.jsdelivr.net/npm/htmx-json@1/dist/htmx-json.min.js\"></script>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		if containsPlugin(enabledPlugins, "htmx-sse") {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "<script src=\"https://cdn.jsdelivr.net/npm/htmx-ext-sse@2.2.4\"></script>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		if containsPlugin(enabledPlugins, "loading-states") {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "<script src=\"https://unpkg.com/htmx-ext-loading-states@2.0.0/loading-states.js\"></script>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		if containsPlugin(enabledPlugins, "alpine-typewriter") {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "<script defer src=\"https://cdn.jsdelivr.net/npm/@marcreichel/alpine-typewriter/dist/alpine-typewriter.min.js\"></script>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
 		return nil
 	})
 }
@@ -211,13 +241,13 @@ func BodyStart(jsLevel string, enabledPlugins []string) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		if containsPlugin(enabledPlugins, "sonner") {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "<div id=\"sonner-portal\"></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "<div id=\"sonner-portal\"></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
 		if jsLevel == "full" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "<div id=\"htmx-indicator\" class=\"fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden\"><div class=\"bg-white p-4 rounded-lg shadow-xl flex items-center gap-2\"><div class=\"animate-spin rounded-full h-5 w-5 border-b-2 border-blue-500\"></div>Loading...</div></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, "<div id=\"htmx-indicator\" class=\"fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden\"><div class=\"bg-white p-4 rounded-lg shadow-xl flex items-center gap-2\"><div class=\"animate-spin rounded-full h-5 w-5 border-b-2 border-blue-500\"></div>Loading...</div></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

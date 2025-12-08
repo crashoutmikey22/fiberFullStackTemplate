@@ -6,9 +6,12 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/favicon"
+	"github.com/gofiber/fiber/v2/middleware/helmet"
+	"github.com/gofiber/fiber/v2/middleware/limiter"
 	"github.com/gofiber/fiber/v2/middleware/requestid"
 
 	"main.go/internal/config"
@@ -90,9 +93,15 @@ func main() {
 	// Global middleware
 	app.Use(middleware.Recover())
 	app.Use(requestid.New())
+	app.Use(helmet.New())
 	app.Use(favicon.New(favicon.Config{
 		File: "./statics/favicon.ico",
 		URL:  "favicon.ico",
+	}))
+	app.Use(limiter.New(limiter.Config{
+		Max:               20,
+		Expiration:        30 * time.Second,
+		LimiterMiddleware: limiter.SlidingWindow{},
 	}))
 
 	// Conditional middleware based on configuration
@@ -126,7 +135,9 @@ func main() {
 	apiV1.Get("/status", apiHandler.Status)
 
 	// Static files
-	app.Static("/static", "./statics")
+	app.Static("/static", "./statics", fiber.Static{
+		CacheDuration: time.Hour * 1,
+	})
 
 	// Security and SEO files from root
 	app.Get("/robots.txt", func(c *fiber.Ctx) error {
@@ -148,11 +159,7 @@ func main() {
 
 	// 404 handler
 	app.Use(func(c *fiber.Ctx) error {
-		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
-			"error":   "Not Found",
-			"message": "The requested resource was not found",
-			"status":  404,
-		})
+		return apiHandler.NotFoundPage(c)
 	})
 
 	// Start server in a goroutine

@@ -62,7 +62,13 @@ func (h *APIHandler) Status(c *fiber.Ctx) error {
 	})
 }
 
-// NotFound returns a 404 handler
+// NotFoundPage renders a 404 HTML page
+func (h *APIHandler) NotFoundPage(c *fiber.Ctx) error {
+	c.Set("Content-Type", "text/html; charset=utf-8")
+	return pages.NotFoundPage().Render(c.Context(), c.Response().BodyWriter())
+}
+
+// NotFound returns a 404 handler (JSON)
 func (h *APIHandler) NotFound(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
 		"error":   "Not Found",
