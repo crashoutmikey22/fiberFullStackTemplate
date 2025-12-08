@@ -1,0 +1,22 @@
+Contact: mailto:security@yourdomain.com
+Expires: 2026-12-08T01:25:19.997Z
+Encryption: https://keys.openpgp.org/search?q=security@yourdomain.com
+Acknowledgments: https://yourdomain.com/security/acknowledgments
+Policy: https://yourdomain.com/security/policy
+Hiring: https://yourdomain.com/careers/security
+Canonical: https://yourdomain.com/.well-known/security.txt
+
+# Security.txt - Contact information for security researchers
+# This file helps security researchers report vulnerabilities
+# 
+# Recommended sections:
+# - Contact: How to reach you (email, form, etc.)
+# - Expires: When this contact information expires
+# - Encryption: PGP key or other encryption methods
+# - Acknowledgments: Where you acknowledge security researchers
+# - Policy: Link to your security policy
+# - Hiring: If you're hiring security researchers
+# - Canonical: The preferred URL for this file
+#
+# Place this file at /.well-known/security.txt or /security.txt
+# For more info: https://securitytxt.org/

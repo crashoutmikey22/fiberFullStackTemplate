@@ -128,6 +128,24 @@ func main() {
 	// Static files
 	app.Static("/static", "./statics")
 
+	// Security and SEO files from root
+	app.Get("/robots.txt", func(c *fiber.Ctx) error {
+		return c.SendFile("./statics/robots.txt")
+	})
+
+	app.Get("/security.txt", func(c *fiber.Ctx) error {
+		return c.SendFile("./statics/security.txt")
+	})
+
+	app.Get("/sitemap.xml", func(c *fiber.Ctx) error {
+		return c.SendFile("./statics/sitemap.xml")
+	})
+
+	// Security.txt in .well-known directory (RFC 9116 standard)
+	app.Get("/.well-known/security.txt", func(c *fiber.Ctx) error {
+		return c.SendFile("./statics/.well-known/security.txt")
+	})
+
 	// 404 handler
 	app.Use(func(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{

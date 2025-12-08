@@ -41,6 +41,13 @@ Toggle optional subsystems without code modifications:
 - **Tailwind CSS** - Utility-first CSS framework
 - **Status Dashboard** - Interactive feature matrix display
 - **Responsive Design** - Mobile-first responsive layouts
+- **Plugin System** - Optional frontend plugins via `HeadPlugins()` component
+
+### ✅ Security & SEO
+- **LLM Bot Protection** - Comprehensive robots.txt blocking AI crawlers
+- **Security.txt** - RFC 9116 compliant security contact file
+- **XML Sitemap** - Search engine optimization and discovery
+- **Bot Management** - Blocks GPTBot, Claude, PerplexityBot, and other AI crawlers
 
 ## 📁 Project Structure
 
@@ -252,6 +259,12 @@ PUSHER_APP_CLUSTER=mt1
 - `GET /static/*` - Serve static assets from `./statics`
 - `GET /favicon.ico` - Application favicon
 
+### Security & SEO Files
+- `GET /robots.txt` - Bot access control and LLM blocking
+- `GET /security.txt` - Security contact information
+- `GET /.well-known/security.txt` - RFC 9116 security.txt standard location
+- `GET /sitemap.xml` - XML sitemap for search engines
+
 ## 🛠️ Development
 
 ### Adding New Features
@@ -279,6 +292,41 @@ templ generate
 
 # Watch for changes during development
 templ generate -watch
+```
+
+### Frontend Plugin System
+The application includes a flexible plugin system for adding optional frontend functionality:
+
+#### Available Plugins
+- **datepicker** - Vanilla JavaScript date picker
+- **tus** - File upload with resumable uploads
+- **sonner** - Toast notification system
+- **floating** - Floating UI positioning
+- **alpine-fusion** - Enhanced Alpine.js with Fuse.js search
+- **sortablejs** - Drag and drop sorting
+- **clipboard** - Clipboard API integration
+- **password-score** - Password strength validation (zxcvbn)
+- **qrcode** - QR code generation
+- **prosemirror** - Rich text editor
+- **lucide** - Icon library
+
+#### Using Plugins
+```go
+// In your templ templates
+@components.HeadPlugins([]string{"datepicker", "sonner", "clipboard"})
+
+// Available plugins:
+// - datepicker: Date selection widget
+// - tus: Resumable file uploads
+// - sonner: Toast notifications
+// - floating: Advanced positioning
+// - alpine-fusion: Enhanced search capabilities
+// - sortablejs: Drag and drop
+// - clipboard: Copy to clipboard
+// - password-score: Password strength meter
+// - qrcode: QR code generation
+// - prosemirror: Rich text editing
+// - lucide: Icon components
 ```
 
 ### Middleware Development
@@ -379,6 +427,75 @@ COMPRESS_LEVEL=2             # Maximum compression
 - Set secure session cookies
 - Use connection pooling for database
 - Monitor health endpoints
+
+### Security & SEO Features
+
+#### LLM Bot Protection
+The application includes comprehensive protection against AI/LLM crawlers:
+
+**Blocked AI Crawlers:**
+- GPTBot (OpenAI)
+- Google-Extended (Google AI)
+- ChatGPT-User
+- Claude-Web, Claude-Bot, anthropic-ai (Anthropic)
+- PerplexityBot
+- YouBot (YouTube)
+- And many others
+
+**Protected Directories:**
+- `/api/` - API endpoints
+- `/admin/` - Administrative interfaces
+- `/private/` - Private content
+- `/internal/` - Internal resources
+- `/.env` - Environment files
+- `/config/` - Configuration files
+- `/sql/` - Database schemas
+- `/cmds/` - Command scripts
+
+#### Security.txt Implementation
+The application provides security contact information following RFC 9116:
+
+**Available Endpoints:**
+- `/security.txt` - Main security contact file
+- `/.well-known/security.txt` - Standard location per RFC 9116
+
+**Features:**
+- Security researcher contact information
+- Encryption keys (PGP)
+- Security policy links
+- Vulnerability reporting guidelines
+- Acknowledgments for responsible disclosure
+
+#### XML Sitemap
+The application includes an XML sitemap for search engine optimization:
+
+**Included URLs:**
+- Homepage (`/`)
+- API documentation (`/api/v1/`)
+- API status (`/api/v1/status`)
+- Health check endpoints (`/health`, `/ready`, `/live`)
+
+**Benefits:**
+- Improved search engine indexing
+- Better SEO performance
+- Faster content discovery
+- Priority and update frequency guidance
+
+#### Configuration
+Update these files with your domain information:
+
+1. **robots.txt** - Replace `yourdomain.com` with your actual domain
+2. **security.txt** - Update contact email and policy URLs
+3. **sitemap.xml** - Modify URLs to match your domain structure
+
+**Testing:**
+```bash
+# Test security files
+curl https://yourdomain.com/robots.txt
+curl https://yourdomain.com/security.txt
+curl https://yourdomain.com/.well-known/security.txt
+curl https://yourdomain.com/sitemap.xml
+```
 
 ### Performance Optimization
 - Enable response compression

@@ -1,0 +1,79 @@
+User-agent: GPTBot
+Disallow: /
+
+User-agent: Google-Extended
+Disallow: /
+
+User-agent: ChatGPT-User
+Disallow: /
+
+User-agent: CCBot
+Disallow: /
+
+User-agent: Claude-Web
+Disallow: /
+
+User-agent: anthropic-ai
+Disallow: /
+
+User-agent: Claude-Bot
+Disallow: /
+
+User-agent: Claude
+Disallow: /
+
+User-agent: Claude-Bot
+Disallow: /
+
+User-agent: Claude-Web
+Disallow: /
+
+User-agent: anthropic-ai
+Disallow: /
+
+User-agent: PerplexityBot
+Disallow: /
+
+User-agent: YouBot
+Disallow: /
+
+User-agent: BingPreview
+Disallow: /
+
+User-agent: facebookexternalhit
+Disallow: /
+
+User-agent: Twitterbot
+Disallow: /
+
+User-agent: LinkedInBot
+Disallow: /
+
+User-agent: WhatsApp
+Disallow: /
+
+User-agent: TelegramBot
+Disallow: /
+
+User-agent: *
+Disallow: /api/
+Disallow: /admin/
+Disallow: /private/
+Disallow: /internal/
+Disallow: /.env
+Disallow: /config/
+Disallow: /sql/
+Disallow: /cmds/
+
+# Allow public pages
+Allow: /
+Allow: /static/
+Allow: /health
+Allow: /ready
+Allow: /live
+
+# Sitemap location
+Sitemap: https://yourdomain.com/sitemap.xml
+
+# Crawl-delay for legitimate bots
+Crawl-delay: 1
