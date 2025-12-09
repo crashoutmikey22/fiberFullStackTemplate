@@ -188,20 +188,31 @@ install_nancy() {
     
     echo -e "\n${BLUE}📦 Installing Nancy (Vulnerability Scanner)${NC}"
     
+    # Create local bin directory if it doesn't exist
+    mkdir -p "$HOME/.local/bin"
+    
+    # Add local bin to PATH if not already there
+    if [[ ":$PATH:" != *":$HOME/.local/bin:"* ]]; then
+        export PATH="$HOME/.local/bin:$PATH"
+        echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc
+    fi
+    
     if ! command_exists "nancy"; then
         if [[ "$OSTYPE" == "linux-gnu"* ]]; then
             # Linux
             NANCY_VERSION="latest"
             run_command "curl -L -o nancy https://github.com/sonatype-nexus-community/nancy/releases/download/${NANCY_VERSION}/nancy-${NANCY_VERSION}-linux-amd64" "Downloading Nancy"
             run_command "chmod +x nancy" "Making Nancy executable"
-            run_command "sudo mv nancy /usr/local/bin/" "Installing Nancy to /usr/local/bin"
+            run_command "mv nancy $HOME/.local/bin/" "Installing Nancy to ~/.local/bin"
         elif [[ "$OSTYPE" == "darwin"* ]]; then
             # macOS
             if command_exists "brew"; then
                 run_command "brew install sonatype-nexus-community/nancy/nancy" "Installing Nancy via Homebrew"
             else
-                print_status "FAIL" "Please install Homebrew first or install Nancy manually"
-                return 1
+                NANCY_VERSION="latest"
+                run_command "curl -L -o nancy https://github.com/sonatype-nexus-community/nancy/releases/download/${NANCY_VERSION}/nancy-${NANCY_VERSION}-darwin-amd64" "Downloading Nancy"
+                run_command "chmod +x nancy" "Making Nancy executable"
+                run_command "mv nancy $HOME/.local/bin/" "Installing Nancy to ~/.local/bin"
             fi
         fi
     else
@@ -213,19 +224,29 @@ install_nancy() {
 install_secret_tools() {
     echo -e "\n${BLUE}🔐 Installing Secret Detection Tools${NC}"
     
+    # Create local bin directory if it doesn't exist
+    mkdir -p "$HOME/.local/bin"
+    
+    # Add local bin to PATH if not already there
+    if [[ ":$PATH:" != *":$HOME/.local/bin:"* ]]; then
+        export PATH="$HOME/.local/bin:$PATH"
+    fi
+    
     # Install TruffleHog
     if ! command_exists "trufflehog"; then
         if [[ "$OSTYPE" == "linux-gnu"* ]]; then
             # Linux
-            run_command "wget -O /tmp/trufflehog.tar.gz https://github.com/trufflesecurity/trufflehog/releases/latest/download/trufflehog_Linux_x86_64.tar.gz" "Downloading TruffleHog"
+            TRUFFLEHOG_VERSION=$(curl -s https://api.github.com/repos/trufflesecurity/trufflehog/releases/latest | grep '"tag_name":' | sed -E 's/.*"tag_name": ?"v?([^"]+).*/\1/')
+            run_command "wget -O /tmp/trufflehog.tar.gz https://github.com/trufflesecurity/trufflehog/releases/download/v${TRUFFLEHOG_VERSION}/trufflehog_${TRUFFLEHOG_VERSION}_linux_amd64.tar.gz" "Downloading TruffleHog"
             run_command "tar -xzf /tmp/trufflehog.tar.gz -C /tmp" "Extracting TruffleHog"
-            run_command "sudo mv /tmp/trufflehog /usr/local/bin/" "Installing TruffleHog"
+            run_command "mv /tmp/trufflehog $HOME/.local/bin/" "Installing TruffleHog"
             rm /tmp/trufflehog.tar.gz
         elif [[ "$OSTYPE" == "darwin"* ]]; then
             # macOS
-            run_command "wget -O /tmp/trufflehog.tar.gz https://github.com/trufflesecurity/trufflehog/releases/latest/download/trufflehog_Mac_x86_64.tar.gz" "Downloading TruffleHog"
+            TRUFFLEHOG_VERSION=$(curl -s https://api.github.com/repos/trufflesecurity/trufflehog/releases/latest | grep '"tag_name":' | sed -E 's/.*"tag_name": ?"v?([^"]+).*/\1/')
+            run_command "wget -O /tmp/trufflehog.tar.gz https://github.com/trufflesecurity/trufflehog/releases/download/v${TRUFFLEHOG_VERSION}/trufflehog_${TRUFFLEHOG_VERSION}_darwin_amd64.tar.gz" "Downloading TruffleHog"
             run_command "tar -xzf /tmp/trufflehog.tar.gz -C /tmp" "Extracting TruffleHog"
-            run_command "sudo mv /tmp/trufflehog /usr/local/bin/" "Installing TruffleHog"
+            run_command "mv /tmp/trufflehog $HOME/.local/bin/" "Installing TruffleHog"
             rm /tmp/trufflehog.tar.gz
         fi
     else
@@ -237,9 +258,9 @@ install_secret_tools() {
         if [[ "$OSTYPE" == "linux-gnu"* ]]; then
             # Linux
             GITLEAKS_VERSION=$(curl -s https://api.github.com/repos/gitleaks/gitleaks/releases/latest | grep '"tag_name":' | sed -E 's/.*"tag_name": ?"v?([^"]+).*/\1/')
-            run_command "wget -O /tmp/gitleaks.tar.gz https://github.com/gitleaks/gitleaks/releases/latest/download/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz" "Downloading GitLeaks"
+            run_command "wget -O /tmp/gitleaks.tar.gz https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz" "Downloading GitLeaks"
             run_command "tar -xzf /tmp/gitleaks.tar.gz -C /tmp" "Extracting GitLeaks"
-            run_command "sudo mv /tmp/gitleaks /usr/local/bin/" "Installing GitLeaks"
+            run_command "mv /tmp/gitleaks $HOME/.local/bin/" "Installing GitLeaks"
             rm /tmp/gitleaks.tar.gz
         elif [[ "$OSTYPE" == "darwin"* ]]; then
             # macOS
@@ -247,9 +268,9 @@ install_secret_tools() {
                 run_command "brew install gitleaks" "Installing GitLeaks via Homebrew"
             else
                 GITLEAKS_VERSION=$(curl -s https://api.github.com/repos/gitleaks/gitleaks/releases/latest | grep '"tag_name":' | sed -E 's/.*"tag_name": ?"v?([^"]+).*/\1/')
-                run_command "wget -O /tmp/gitleaks.tar.gz https://github.com/gitleaks/gitleaks/releases/latest/download/gitleaks_${GITLEAKS_VERSION}_darwin_x64.tar.gz" "Downloading GitLeaks"
+                run_command "wget -O /tmp/gitleaks.tar.gz https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_darwin_x64.tar.gz" "Downloading GitLeaks"
                 run_command "tar -xzf /tmp/gitleaks.tar.gz -C /tmp" "Extracting GitLeaks"
-                run_command "sudo mv /tmp/gitleaks /usr/local/bin/" "Installing GitLeaks"
+                run_command "mv /tmp/gitleaks $HOME/.local/bin/" "Installing GitLeaks"
                 rm /tmp/gitleaks.tar.gz
             fi
         fi
@@ -267,23 +288,31 @@ install_docker_tools() {
     
     echo -e "\n${BLUE}🐳 Installing Docker Security Tools${NC}"
     
+    # Create local bin directory if it doesn't exist
+    mkdir -p "$HOME/.local/bin"
+    
+    # Add local bin to PATH if not already there
+    if [[ ":$PATH:" != *":$HOME/.local/bin:"* ]]; then
+        export PATH="$HOME/.local/bin:$PATH"
+    fi
+    
     # Install Hadolint
     if ! command_exists "hadolint"; then
         if [[ "$OSTYPE" == "linux-gnu"* ]]; then
             # Linux
             HADOLINT_VERSION=$(curl -s https://api.github.com/repos/hadolint/hadolint/releases/latest | grep '"tag_name":' | sed -E 's/.*"tag_name": ?"v?([^"]+).*/\1/')
-            run_command "wget -O /tmp/hadolint https://github.com/hadolint/hadolint/releases/latest/download/hadolint-Linux-x86_64" "Downloading Hadolint"
+            run_command "wget -O /tmp/hadolint https://github.com/hadolint/hadolint/releases/download/v${HADOLINT_VERSION}/hadolint-Linux-x86_64" "Downloading Hadolint"
             run_command "chmod +x /tmp/hadolint" "Making Hadolint executable"
-            run_command "sudo mv /tmp/hadolint /usr/local/bin/" "Installing Hadolint"
+            run_command "mv /tmp/hadolint $HOME/.local/bin/" "Installing Hadolint"
         elif [[ "$OSTYPE" == "darwin"* ]]; then
             # macOS
             if command_exists "brew"; then
                 run_command "brew install hadolint" "Installing Hadolint via Homebrew"
             else
                 HADOLINT_VERSION=$(curl -s https://api.github.com/repos/hadolint/hadolint/releases/latest | grep '"tag_name":' | sed -E 's/.*"tag_name": ?"v?([^"]+).*/\1/')
-                run_command "wget -O /tmp/hadolint https://github.com/hadolint/hadolint/releases/latest/download/hadolint-Darwin-x86_64" "Downloading Hadolint"
+                run_command "wget -O /tmp/hadolint https://github.com/hadolint/hadolint/releases/download/v${HADOLINT_VERSION}/hadolint-Darwin-x86_64" "Downloading Hadolint"
                 run_command "chmod +x /tmp/hadolint" "Making Hadolint executable"
-                run_command "sudo mv /tmp/hadolint /usr/local/bin/" "Installing Hadolint"
+                run_command "mv /tmp/hadolint $HOME/.local/bin/" "Installing Hadolint"
             fi
         fi
     else
@@ -333,6 +362,9 @@ install_additional_tools() {
 verify_installations() {
     echo -e "\n${BLUE}🔍 Verifying Installations${NC}"
     
+    # Add local bin to PATH for verification
+    export PATH="$HOME/.local/bin:$HOME/go/bin:$PATH"
+    
     local tools=("go" "gosec" "golangci-lint" "nancy" "trufflehog" "gitleaks" "hadolint")
     local installed=0
     local total=${#tools[@]}
@@ -356,6 +388,13 @@ verify_installations() {
     else
         print_status "WARN" "Some tools failed to install. Check the output above."
         echo -e "\n${YELLOW}💡 You can still run: ./cmds/security.sh --bypass${NC}"
+    fi
+    
+    # Remind about PATH
+    if [ ! -f "$HOME/.local/bin" ] && [ $installed -lt $total ]; then
+        echo -e "\n${YELLOW}💡 Note: Make sure \$HOME/.local/bin is in your PATH${NC}"
+        echo "Add this to your ~/.bashrc or ~/.zshrc:"
+        echo "export PATH=\"\$HOME/.local/bin:\$PATH\""
     fi
 }
 
