@@ -141,6 +141,20 @@ templ HeadPlugins(enabledPlugins []string) {
 	if containsPlugin(enabledPlugins, "alpine-typewriter") {
 		<script defer src="https://cdn.jsdelivr.net/npm/@marcreichel/alpine-typewriter/dist/alpine-typewriter.min.js"></script>
 	}
+
+	<!-- Console warning to prevent script pasting - executes last -->
+	<script>
+		// Wait for all other scripts to load first
+		window.addEventListener('load', function() {
+			setTimeout(function() {
+				console.log('%c⚠️ WARNING! ⚠️', 'color: #ff0000; font-size: 24px; font-weight: bold;');
+				console.log('%cPasting scripts into the console can be dangerous and may compromise your account security.', 'color: #ff6600; font-size: 14px;');
+				console.log('%cNever paste code from untrusted sources into this console.', 'color: #ff6600; font-size: 14px;');
+				console.log('%cIf you were told to paste something here to "get free money/credits", "enable a feature" or "fix an error", this is a scam.', 'color: #ff6600; font-size: 14px;');
+				console.log('%cIf you need help, please contact support through official channels.', 'color: #0066ff; font-size: 14px;');
+			}, 1000); // Delay to ensure it runs after other scripts
+		});
+	</script>
 }
 
 // BodyStart opens the <body>, injects shared overlays, and renders plugin blocks.
